@@ -1,6 +1,6 @@
+import "@/global.css";
 import { Stack } from "expo-router";
 import { useColorScheme } from "react-native";
-import '@/global.css';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -36,13 +36,13 @@ export default function TabLayout() {
           title: "Camera",
         }}
       />
-{/* 
+
       <Stack.Screen
-        name="map"
+        name="video"
         options={{
-          title: "Map",
+          title: "Videos",
         }}
-      /> */}
+      />
     </Stack>
   );
 }

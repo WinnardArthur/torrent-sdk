@@ -39,7 +39,7 @@ export default function HomeScreen() {
         <View className="flex flex-row justify-between items-center">
           <Text className="text-3xl font-bold text-slate-900">Discover</Text>
 
-          <View className="flex flex-row items-center gap-3">
+          <View className="flex flex-row items-center gap-6">
             <TouchableOpacity
               className="block"
               onPress={() => router.push("/profile")}
@@ -47,12 +47,12 @@ export default function HomeScreen() {
               <Text className="text-blue-500 font-bold">Profile</Text>
             </TouchableOpacity>
 
-            {/* <TouchableOpacity
+            <TouchableOpacity
               className="block"
-              onPress={() => router.push("/map")}
+              onPress={() => router.push("/video")}
             >
-              <Text className="text-purple-500 font-bold">Explore</Text>
-            </TouchableOpacity> */}
+              <Text className="text-purple-500 font-bold">Videos</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
