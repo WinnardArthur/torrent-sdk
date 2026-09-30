@@ -43,6 +43,20 @@ export default function TabLayout() {
           title: "Videos",
         }}
       />
+
+      <Stack.Screen
+        name="map"
+        options={{
+          title: "Map",
+        }}
+      />
+
+      <Stack.Screen
+        name="notifications"
+        options={{
+          title: "Notifications",
+        }}
+      />
     </Stack>
   );
 }

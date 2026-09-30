@@ -96,7 +96,6 @@ export default function NotificationsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Immediate notification */}
       <View className="mt-4 rounded-2xl bg-white p-5">
         <Text className="text-lg font-bold">Local Notification</Text>
 
@@ -114,7 +113,6 @@ export default function NotificationsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Scheduled notification */}
       <View className="mt-4 rounded-2xl bg-white p-5">
         <Text className="text-lg font-bold">Scheduled Notification</Text>
 
@@ -135,7 +133,6 @@ export default function NotificationsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Result */}
       <View className="mt-4 rounded-2xl bg-white p-5">
         <Text className="text-lg font-bold">Last Notification</Text>
 
