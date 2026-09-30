@@ -19,7 +19,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyCzoxHzAJxQeZc2isXHWglAxpP3NF-HUog"
+          "apiKey": ""
         }
       },
       "predictiveBackGestureEnabled": false,
