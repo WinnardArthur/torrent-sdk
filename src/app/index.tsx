@@ -1,146 +1,141 @@
-import * as Notifications from "expo-notifications";
+import { usePostStore } from "@/store/post-store";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  RefreshControl,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+export default function HomeScreen() {
+  const posts = usePostStore((state) => state.posts);
+  const loading = usePostStore((state) => state.loading);
+  const fetchPosts = usePostStore((state) => state.fetchPosts);
 
-export default function NotificationsScreen() {
-  const [permission, setPermission] = useState("Not requested");
-  const [lastNotification, setLastNotification] = useState("None");
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        setLastNotification(
-          notification.request.content.title ?? "Notification received",
-        );
-      },
-    );
-
-    return () => subscription.remove();
+    fetchPosts();
   }, []);
 
-  const requestPermission = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-2xl font-semibold text-blue-500">Loading...</Text>
+      </View>
+    );
+  }
 
-    setPermission(status);
-
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission required",
-        "Notification permission was not granted.",
-      );
-    }
-  };
-
-  const sendNotification = async () => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Hello from Torrent SDK",
-        body: "This is a local notification.",
-      },
-      trigger: null,
-    });
-  };
-
-  const scheduleNotification = async () => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Scheduled notification",
-        body: "This notification was scheduled 10 seconds ago.",
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 10,
-        repeats: false,
-      },
-    });
-
-    Alert.alert("Scheduled", "A notification will appear in 10 seconds.");
-  };
-
-  const cancelScheduledNotifications = async () => {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-
-    Alert.alert("Cancelled", "All scheduled notifications were cancelled.");
-  };
+  const filteredPosts = posts.filter((post) =>
+    post.title.toLowerCase().includes(query.toLowerCase()),
+  );
 
   return (
-    <View className="flex-1 bg-gray-50 p-5">
-      <Text className="mt-10 text-3xl font-bold">Notification Playground</Text>
+    <View className="bg-slate-50 flex-1">
+      <View className="px-5 pt-6 pb-4">
+        <View className="flex flex-row justify-between items-center">
+          <Text className="text-3xl font-bold text-slate-900">Discover</Text>
 
-      <Text className="mt-2 text-gray-500">
-        Test local and scheduled notifications.
-      </Text>
+          <View className="flex flex-row items-center gap-3">
+            <View className="flex flex-col items-center gap-6 overflow-x-scroll">
+              <TouchableOpacity
+                className="block"
+                onPress={() => router.push("/profile")}
+              >
+                <Text className="text-blue-500 font-bold">Profile</Text>
+              </TouchableOpacity>
 
-      {/* Permission */}
-      <View className="mt-8 rounded-2xl bg-white p-5">
-        <Text className="text-lg font-bold">Permission</Text>
+              <TouchableOpacity onPress={() => router.push("/map")}>
+                <Text className="text-purple-500 font-bold">Maps</Text>
+              </TouchableOpacity>
 
-        <Text className="mt-2 text-gray-500">Status: {permission}</Text>
+              <TouchableOpacity
+                className="block"
+                onPress={() => router.push("/video")}
+              >
+                <Text className="text-purple-500 font-bold">Videos</Text>
+              </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={requestPermission}
-          className="mt-4 rounded-xl bg-blue-600 p-4"
-        >
-          <Text className="text-center font-semibold text-white">
-            Request Permission
+              <TouchableOpacity
+                className="block"
+                onPress={() => router.push("/notifications")}
+              >
+                <Text className="text-purple-500 font-bold">Notifications</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="block"
+                onPress={() => router.push("/camera")}
+              >
+                <Text className="text-purple-500 font-bold">Camera</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Text className="mt-2 text-slate-500">
+            Browse the latest articles and updates.
           </Text>
-        </TouchableOpacity>
+        </View>
+
+        <View className="px-5 mb-4">
+          <TextInput
+            placeholder="Search articles..."
+            value={query}
+            onChangeText={setQuery}
+            className="rounded-2xl bg-white p-4 border border-gray-300"
+          />
+        </View>
+
+        <FlatList
+          data={filteredPosts}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ padding: 16 }}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={fetchPosts} />
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              className="mb-4 rounded-3x bg-white p-5"
+              onPress={() =>
+                router.push({ pathname: "/details", params: { id: item.id } })
+              }
+            >
+              <Text className="text-lg font-semibold text-slate-900">
+                {item.title}
+              </Text>
+
+              <Text className="mt-2 text-slate-500 leading-6" numberOfLines={3}>
+                {item.body}
+              </Text>
+
+              <View className="mt-4 flex-row justify-between">
+                <Text className="text-xs text-slate-400">
+                  Article #{item.id}
+                </Text>
+
+                <Text className="text-xs font-medium text-blue-600">
+                  Read More
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={
+            <View className="items-center py-16">
+              <Text className="text-slate-500">No articles found</Text>
+            </View>
+          }
+        />
       </View>
 
-      {/* Immediate notification */}
-      <View className="mt-4 rounded-2xl bg-white p-5">
-        <Text className="text-lg font-bold">Local Notification</Text>
-
-        <Text className="mt-2 text-gray-500">
-          Send a notification immediately.
-        </Text>
-
-        <TouchableOpacity
-          onPress={sendNotification}
-          className="mt-4 rounded-xl bg-green-600 p-4"
-        >
-          <Text className="text-center font-semibold text-white">
-            Send Notification
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Scheduled notification */}
-      <View className="mt-4 rounded-2xl bg-white p-5">
-        <Text className="text-lg font-bold">Scheduled Notification</Text>
-
-        <TouchableOpacity
-          onPress={scheduleNotification}
-          className="mt-4 rounded-xl bg-purple-600 p-4"
-        >
-          <Text className="text-center font-semibold text-white">
-            Schedule 10 Seconds
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={cancelScheduledNotifications}
-          className="mt-3 rounded-xl border border-gray-300 p-4"
-        >
-          <Text className="text-center font-semibold">Cancel Scheduled</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Result */}
-      <View className="mt-4 rounded-2xl bg-white p-5">
-        <Text className="text-lg font-bold">Last Notification</Text>
-
-        <Text className="mt-2 text-gray-500">{lastNotification}</Text>
-      </View>
+      <TouchableOpacity
+        onPress={() => router.push("/create-post")}
+        className="absolute bottom-20 right-6 h-16 w-16 items-center justify-center rounded-full bg-blue-600"
+      >
+        <Text className="text-3xl text-white">+</Text>
+      </TouchableOpacity>
     </View>
   );
 }
