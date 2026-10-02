@@ -45,7 +45,7 @@ export default function HomeScreen() {
                 className="block"
                 onPress={() => router.push("/profile")}
               >
-                <Text className="text-blue-500 font-bold">Profile</Text>
+                <Text className="text-blue-500 font-bold">User Profile</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => router.push("/map")}>
